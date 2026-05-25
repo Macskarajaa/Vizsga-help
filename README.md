@@ -31,3 +31,7 @@ PUT(en fele): app.put("/viragupdate",(req,resp)=>{
         }
     })
 })
+
+Random valami egy Listbol(Java)
+Random random = new Random();
+    Repulok randomRepulo = repulok.get(random.nextInt(repulok.size()));
