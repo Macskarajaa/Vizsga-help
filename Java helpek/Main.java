@@ -8,68 +8,88 @@ import java.util.stream.Collectors;
 public class Main {
     public static void main(String[] args) {
 
-        List<Repulok> repulok = new ArrayList<>();
-        try (Scanner scanner = new Scanner(new File("repulok.csv"), "UTF-8")){
-                scanner.nextLine();
-                while (scanner.hasNextLine()){
-                    repulok.add(new Repulok(scanner.nextLine()));
-                }
+        List<DiaFilmek> diafilmlist = new ArrayList<>();
 
-        } catch (Exception e){
+        try (Scanner scanner = new Scanner(new File("diafilm.csv"), "UTF-8")) {
+            scanner.nextLine();
+            while (scanner.hasNextLine()) {
+                diafilmlist.add(new DiaFilmek(scanner.nextLine()));
+            }
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
 
-        Random random = new Random();
-        Repulok randomRepulo = repulok.get(random.nextInt(repulok.size()));
+        List<DiaFilmek> szintelen = diafilmlist.stream().filter(diaFilmek -> !diaFilmek.getSzines()).toList();
 
-        System.out.println();
-        System.out.printf("0) Összesen %d repülő adata beolvasva.\n", repulok.size());
-        System.out.printf("\tKözülük egy véletlen kiválasztott: %s \n", randomRepulo.getTipus());
+        //0) 705 diafilm adata beolvasva
+        //Közülük 141 még fekete-fehér
 
-        List<Repulok> legtobb = repulok.stream().sorted(Comparator.comparingInt(Repulok::getFerohelyek).reversed()).distinct().limit(2).toList();
+        System.out.printf("0) %d diafilm adata beolvasva\n", diafilmlist.size());
+        System.out.printf("\tKözülük %d még fekete-fehér\n", szintelen.size());
 
-        System.out.printf("1) Legtöbb férőhellyel rendelkezik: %s (%d hely)\n", legtobb.get(0).getTipus(), legtobb.get(0).getFerohelyek());
-        System.out.printf("\t A második legtöbb férőhely: %s (%d hely)",  legtobb.get(1).getTipus(), legtobb.get(1).getFerohelyek());
+        //1) A legrégebbi diafilm: A cár és a madár (1950)
+        //De ugyanebben az évben készült még:
 
-        List<Repulok> szazezernelkisebb = repulok.stream().filter(repulok1 -> repulok1.getSuly()< 100000).toList();
+        DiaFilmek legregebbi = diafilmlist.stream().min(Comparator.comparing(DiaFilmek::getEv)).get();
+        System.out.printf("1) A legrégebbi diafilm: %s (%d)", legregebbi.getCim(), legregebbi.getEv());
+        System.out.printf("\nDe ugyanebben az évben készült még:");
 
-        double osszsuly = 0;
-        for(Repulok e: szazezernelkisebb){
-            osszsuly += e.getSuly();
-        }
+        //2) A 2000 előtt készült diafilmek átlagos kockaszáma: 38,7
+        //A később készült diafilmeknél az áltag: 29,4
 
-        double atlagsuly = (double) osszsuly/szazezernelkisebb.size();
-        System.out.printf("2) A 100000kg súlynál kisebb gépek (%d darab) átlagsúlya: %.2f kg\n", szazezernelkisebb.size(), atlagsuly);
+        List<DiaFilmek> legregebbifilmek = diafilmlist.stream()
+                .filter(diaFilmek ->{
+                    return diaFilmek.getEv().equals(legregebbi.getEv()) && !diaFilmek.equals(legregebbi);
 
-        String szamnelkulitipus = repulok.stream().filter(repulok1 -> !repulok1.getTipus().chars().anyMatch(Character::isDigit)).map(Repulok::getTipus).collect(Collectors.joining(", "));
-        System.out.printf("3) Típusok, amelyikben nincs szám: %s \n", szamnelkulitipus);
+                }).toList();
+        legregebbifilmek.stream().forEach(hzs-> System.out.printf("\n -  %s (%d)",hzs.getCim(), hzs.getEv()));
 
-        List<String> gyartok = repulok.stream().map(repulok1 -> repulok1
-        .getTipus()
-        .split(" ")[0]).distinct().sorted().toList();
+        double ketezerelottiatlag = diafilmlist.stream().filter(diaFilmek -> diaFilmek.getEv() < 2000).map(DiaFilmek::getKocka).collect(Collectors.averagingDouble(Integer::intValue));
 
-        System.out.printf("4) Gyártók: %s \n",String.join(", ", gyartok) );
+        double ketezerutaniatlag = diafilmlist.stream().filter(diaFilmek -> diaFilmek.getEv() > 2000).map(DiaFilmek::getKocka).collect(Collectors.averagingDouble(Integer::intValue));
 
-        Random gyartorandom = new Random();
-        String veletlengyarto = gyartok.get(random.nextInt(gyartok.size()));
+        System.out.printf("2) A 2000 előtt készült diafilmek átlagos kockaszáma: %.1f\n",ketezerelottiatlag);
+        System.out.printf("\tA később készült diafilmeknél az áltag: %.1f",ketezerutaniatlag);
 
-        System.out.printf("Közülük egy véletlen kiválasztott: %s \n", veletlengyarto);
-        System.out.printf("Termékeik: \n");
-        repulok.stream()
-                .filter(repulok1 -> repulok1.getTipus().startsWith(veletlengyarto))
-                .forEach(repulok1 -> System.out.printf(" - %s\n", repulok1.getTipus()));
+        // 3) Az egyes évtizedekben készült diafilmek száma:
+        //lefott a kave
+        Map<String, Long> feladom = diafilmlist.stream()
+                .collect(Collectors.groupingBy(
+                        evszerint -> evszerint.getEv() / 10 * 10 + "-" + evszerint.getEv() / 10 + "9",
+                        Collectors.counting()));
 
-       List<Repulok> haromszaznaltobb = repulok.stream()
-                       .filter(repulok1 -> repulok1.getFerohelyek()>300).toList();
-        List<String> haromszaznaltobbStr = haromszaznaltobb.stream().map(obj->obj.toString()).toList();
+        System.out.println("3) Az egyes évtizedekben készült diafilmek száma:");
+        Map<String, Long> countByEvSortedDesc = feladom.entrySet().stream()
+                .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (a, b) -> a,
+                        LinkedHashMap::new));
+        countByEvSortedDesc.forEach((key, value)-> System.out.printf("\n %s : %d darab", key, value));
 
-        System.out.println("5) A 300 főnél több férőhelyű gépek adatai a sokutas.txt fájlba mentve.");
+
+        //4) A legtöbb kocka (3053 db) készítésének éve: 1957
+        //    A második legtöbb kocka (2016 db) éve: 1958
+        Map<Integer, Integer> evekEsKockak = diafilmlist.stream()
+                        .collect(Collectors.groupingBy(
+                                DiaFilmek::getEv,
+                                Collectors.summingInt(DiaFilmek::getKocka)
+                        ));
+
+        evekEsKockak.entrySet().stream()
+                        .max(Map.Entry.comparingByValue())
+                        .ifPresent(result -> System.out.printf("\n4) A legtöbb kocka (%d db) készítésének éve: %d\n", result.getValue(), result.getKey()));
+
+
+        List<DiaFilmek> ketezernelnagyobb= diafilmlist.stream().filter(value->value.getEv() >= 2000).toList();
+        List<String> ketezernelnagyobbStr = ketezernelnagyobb.stream().map(obj->obj.toString()).toList();
+
+        System.out.println("\n5) A 200x évben megjelent diák adatai elmentve (200x.txt)");
         try{
-            Files.write(Paths.get("sokutas.txt"),haromszaznaltobbStr, StandardCharsets.UTF_8);
+            Files.write(Paths.get("200x.txt"),ketezernelnagyobbStr, StandardCharsets.UTF_8);
         }catch (Exception e){
             System.out.println(e.getMessage());
         }
     }
-
-
 }
