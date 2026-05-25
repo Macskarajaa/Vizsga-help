@@ -154,9 +154,31 @@ public class RepulokController {
         alert.showAndWait();
     }
 }
+
+
 overrideolni kell hozza a toStringet is:
 @Override
 public String toString() {
     // Tell JavaFX to display the 'Tipus' property in the ListView
     return this.Tipus; 
 }
+
+
+mas modon a beolvasas:
+if (fbe != null) {
+            leftListView.getItems().clear();
+            rightListView.getItems().clear();
+
+            readData(fbe);
+            System.out.println("beolvasott adatok: " + diafilmLista.size());
+
+            // FIX: Populating the left list with EVERY plane object loaded from the file
+            for (DiaFilmek film : diafilmLista) {
+                leftListView.getItems().add(film.getCim());
+            }
+            // Auto-select the first plane if the list isn't empty
+            if (!leftListView.getItems().isEmpty()) {
+                leftListView.getSelectionModel().select(0);
+            }
+        }
+    }
