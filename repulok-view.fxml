@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.input.KeyCodeCombination?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane fx:id="controller" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main.repulokgui.RepulokController">
+    <top>
+        <MenuBar BorderPane.alignment="CENTER">
+            <menus>
+                <Menu fx:id="" mnemonicParsing="false" text="Fájl">
+                    <items>
+                        <MenuItem fx:id="Megnyitas" mnemonicParsing="false" onAction="#onMegnyitasClick" text="Megnyitás">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                            </accelerator>
+                        </MenuItem>
+                        <MenuItem mnemonicParsing="false" onAction="#exitPlatform" text="Kilépés" />
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Edit">
+                    <items>
+                        <MenuItem mnemonicParsing="false" text="Delete" />
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Súgó">
+                    <items>
+                        <MenuItem mnemonicParsing="false" onAction="#handleAbout" text="Névjegy" />
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar>
+    </top>
+    <center>
+        <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+            <children>
+                <HBox alignment="BOTTOM_LEFT" maxWidth="1.7976931348623157E308" prefHeight="100.0" prefWidth="200.0" spacing="10.0" VBox.vgrow="ALWAYS">
+                    <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                    </padding>
+               <children>
+                  <Label prefWidth="2000.0" text="Gyártók" />
+                  <Label prefWidth="2000.0" text="Label" />
+               </children>
+                </HBox>
+                <SplitPane dividerPositions="0.5" minHeight="300.0" minWidth="600.0" prefHeight="160.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                    <items>
+                        <VBox maxHeight="250.0" maxWidth="300.0" minHeight="250.0" minWidth="300.0">
+                            <children>
+                                <ListView fx:id="leftListView" fixedCellSize="0.0" maxHeight="250.0" maxWidth="300.0" minHeight="250.0" minWidth="300.0" onMouseClicked="#fillRight" VBox.vgrow="ALWAYS" />
+                            </children>
+                        </VBox>
+                        <VBox maxHeight="250.0" maxWidth="300.0" minHeight="250.0" minWidth="300.0" SplitPane.resizableWithParent="true">
+                            <children>
+                                <ListView fx:id="rightListView" fixedCellSize="0.0" maxHeight="250.0" maxWidth="300.0" minHeight="250.0" minWidth="300.0" VBox.vgrow="ALWAYS" />
+                            </children>
+                        </VBox>
+                    </items>
+                </SplitPane>
+            </children>
+        </VBox>
+    </center>
+</BorderPane>
