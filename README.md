@@ -1,5 +1,5 @@
 
-% lekerdezes sqlben: app.get("/api/search/:nev",(req,resp)=>{
+% lekerdezes sqlben ES where join: app.get("/api/search/:nev",(req,resp)=>{
     const {nev} = req.params
     const sql = "SELECT kategoriak.nev as kategNev, aruk.* from aruk, kategoriak WHERE aruk.kategoriaId = kategoriak.id and aruk.nev  LIKE ?;"
     const values=[`%${nev}%`]
